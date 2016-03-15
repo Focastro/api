@@ -16,7 +16,8 @@ default: &default
   pool: 5
   username: root
   password:  my123
-  socket: /tmp/mysql.sock
+  socket: /var/run/mysqld/mysqld.sock
+  #socket: /tmp/mysql.sock
 
 development:
   adapter: mysql2
@@ -25,7 +26,8 @@ development:
   pool: 5
   username: root
   password:  my123
-  socket: /tmp/mysql.sock
+  socket: /var/run/mysqld/mysqld.sock
+  #socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -37,7 +39,8 @@ test:
   pool: 5
   username: root
   password:  my123
-  socket: /tmp/mysql.sock
+  socket: /var/run/mysqld/mysqld.sock
+  #socket: /tmp/mysql.sock
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -65,4 +68,5 @@ production:
   pool: 5
   username: root
   password:  my123
-  socket: /tmp/mysql.sock
+  socket: /var/run/mysqld/mysqld.sock
+  #socket: /tmp/mysql.sock
