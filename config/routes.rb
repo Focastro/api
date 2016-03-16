@@ -1,8 +1,19 @@
 Rails.application.routes.draw do
-  resources :sessions
-  resources :transactions
-  resources :users
-  resources :products
+
+# resources :users
+# resources :sessions
+# resources :transactions
+# resources :products
+
+# constraints subdomain: 'api' do
+ namespace :api, path: '/', defaults: {format: 'json'} do
+   resources :users
+   resources :sessions
+   resources :transactions
+    resources :products
+ end
+#end
+#
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

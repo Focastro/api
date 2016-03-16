@@ -1,5 +1,7 @@
-class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+module Api
+  class UsersController < ApplicationController
+    before_action :set_user, only: [:show, :edit, :update, :destroy]
+    before_action :user_params, only: [:create]
 
   # GET /users
   # GET /users.json
@@ -8,7 +10,7 @@ class UsersController < ApplicationController
   end
 
   # GET /users/1
-  # GET /users/1.json
+  # GET /users/1.json`
   def show
   end
 
@@ -24,26 +26,21 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(user_params)
-
-    respond_to do |format|
-      if @user.save
-        render json: user , status: 201
-      else
-        render json: user.errors, status: 422
-      end
+    user = User.new(user_params)
+    if user.save
+      render json: user , status: 201
+    else
+      render json: user.errors, status: 422
     end
   end
 
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    respond_to do |format|
-      if @user.update(user_params)
-        render json: user, status: :ok
-      else
-        render json: user.errors, status: :unprocessable_entity
-      end
+    if @user.update(user_params)
+      render json: @user, status: 200
+    else
+      render json: @user.errors, status: :unprocessable_entit
     end
   end
 
@@ -51,9 +48,7 @@ class UsersController < ApplicationController
   # DELETE /users/1.json
   def destroy
     @user.destroy
-    respond_to do |format|
-      render status: :ok
-    end
+      render json: @user , status: 200
   end
 
   private
@@ -66,4 +61,5 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:username, :password, :firstname)
     end
+  end
 end
