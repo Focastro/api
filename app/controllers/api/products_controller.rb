@@ -10,6 +10,8 @@ class ProductsController < ApplicationController
   # GET /products/1
   # GET /products/1.json
   def show
+    product = Product.find_by(id: params[:id])
+    render json: product, status: 200
   end
 
   # GET /products/new
@@ -21,44 +23,39 @@ class ProductsController < ApplicationController
   def edit
   end
 
+  def show_id
+  end
+
+  def show_name
+  end
+
   # POST /products
   # POST /products.json
   def create
     @product = Product.new(product_params)
 
-    respond_to do |format|
       if @product.save
-        format.html { redirect_to @product, notice: 'Product was successfully created.' }
-        format.json { render :show, status: :created, location: @product }
+        render json: product, status: 201
       else
-        format.html { render :new }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
+        render json: product.errors, status: 422
       end
-    end
   end
 
   # PATCH/PUT /products/1
   # PATCH/PUT /products/1.json
   def update
-    respond_to do |format|
       if @product.update(product_params)
-        format.html { redirect_to @product, notice: 'Product was successfully updated.' }
-        format.json { render :show, status: :ok, location: @product }
+        render json: @product, status: 200
       else
-        format.html { render :edit }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
+        render json: @product.errors, status: :unprocessable_entit
       end
-    end
   end
 
   # DELETE /products/1
   # DELETE /products/1.json
   def destroy
     @product.destroy
-    respond_to do |format|
-      format.html { redirect_to products_url, notice: 'Product was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    render json: @product , status: 200
   end
 
   private
@@ -69,6 +66,6 @@ class ProductsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
-      params.require(:product).permit(:name, :description, :status)
+      params.require(:product).permit(:name, :description, :status, :id_user)
     end
 end

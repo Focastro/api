@@ -1,5 +1,6 @@
-class SessionsController < ApplicationController
-  before_action :set_session, only: [:show, :edit, :update, :destroy]
+module Api
+  class SessionsController < ApplicationController
+    before_action :set_session, only: [:show, :edit, :update, :destroy]
 
   # GET /sessions
   # GET /sessions.json
@@ -24,18 +25,26 @@ class SessionsController < ApplicationController
   # POST /sessions
   # POST /sessions.json
   def create
-    @session = Session.new(session_params)
-
-    respond_to do |format|
-      if @session.save
-        format.html { redirect_to @session, notice: 'Session was successfully created.' }
-        format.json { render :show, status: :created, location: @session }
-      else
-        format.html { render :new }
-        format.json { render json: @session.errors, status: :unprocessable_entity }
-      end
+    user = User.find_by(username: params[:username])
+    if user && user.authenticate(params[:password])
+      render json: user, status: 200
+    else
+      render json: user.errors, status: 404
     end
   end
+  # def create
+  #   users = Users.all
+  #   if users.exists?(username:, password:)
+
+  #   end
+  #   @session = Session.new(session_params)
+  #     if @session.save
+
+  #     else
+
+  #     end
+
+  # end
 
   # PATCH/PUT /sessions/1
   # PATCH/PUT /sessions/1.json
@@ -71,4 +80,5 @@ class SessionsController < ApplicationController
     def session_params
       params.require(:session).permit(:username, :toke, :creation_date)
     end
+  end
 end
