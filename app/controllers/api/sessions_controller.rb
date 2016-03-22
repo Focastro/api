@@ -27,9 +27,18 @@ module Api
   def create
     user = User.find_by(username: params[:username])
     if user && user.authenticate(params[:password])
-      render json: user, status: 200
+
+      if Session.find_by(username: params[:username])
+        session_verify = Session.find_by(username: params[:username])
+        Session.update(session_verify.id, :creation_date => Time.now)
+        render json: "sa", status: 200
+      else
+        session = Session.new(:username => user.username, :creation_date => Time.new)
+        session.save
+        render json: session, status: 200
+      end
     else
-      render json: user.errors, status: 404
+      render json: "User or password invalid", status: 422
     end
   end
   # def create
@@ -49,7 +58,6 @@ module Api
   # PATCH/PUT /sessions/1
   # PATCH/PUT /sessions/1.json
   def update
-    respond_to do |format|
       if @session.update(session_params)
         format.html { redirect_to @session, notice: 'Session was successfully updated.' }
         format.json { render :show, status: :ok, location: @session }
@@ -57,7 +65,6 @@ module Api
         format.html { render :edit }
         format.json { render json: @session.errors, status: :unprocessable_entity }
       end
-    end
   end
 
   # DELETE /sessions/1
@@ -78,7 +85,7 @@ module Api
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def session_params
-      params.require(:session).permit(:username, :toke, :creation_date)
+      params.require(:session).permit(:username, :token, :creation_date)
     end
   end
 end
