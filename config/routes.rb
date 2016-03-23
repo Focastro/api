@@ -1,14 +1,18 @@
 Rails.application.routes.draw do
 
  namespace :api, path: '/', defaults: {format: 'json'} do
+   get '/products/?' => 'products#show_name'
    resources :users
    resources :sessions
    resources :transactions
-    resources :products
+   resources :products
+   #get '/products/?' => 'products#show_name'
+   post '/session/authenticate' => 'sessions#create'
  end
 
- post '/session/authenticate' => 'api/sessions#create'
 
+
+ #get '/products/:?' => 'api/sessions#show_id'
 
 #
   # The priority is based upon order of creation: first created -> highest priority.

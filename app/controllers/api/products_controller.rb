@@ -1,17 +1,27 @@
-class ProductsController < ApplicationController
-  before_action :set_product, only: [:show, :edit, :update, :destroy]
+module Api
+  class ProductsController < ApplicationController
+    before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   # GET /products
   # GET /products.json
   def index
-    @products = Product.all
+    if product = Product.find_by(name: params[:name])
+        render json: product, status: 200
+        #render json: {"Response": "Product not found"}, status: 422
+    else
+      product = Product.all
+      render json: product, status: 200
+    end
   end
 
   # GET /products/1
   # GET /products/1.json
   def show
-    product = Product.find_by(id: params[:id])
-    render json: product, status: 200
+    if product = Product.find_by(id: params[:id])
+      render json: product, status: 200
+    else
+      render json: {"Response": "Product not found"}, status: 422
+    end
   end
 
   # GET /products/new
@@ -23,32 +33,25 @@ class ProductsController < ApplicationController
   def edit
   end
 
-  def show_id
-  end
-
-  def show_name
-  end
-
   # POST /products
   # POST /products.json
   def create
-    @product = Product.new(product_params)
-
-      if @product.save
-        render json: product, status: 201
-      else
-        render json: product.errors, status: 422
-      end
+    product = Product.new(product_params)
+    if product.save
+      render json: product, status: 201
+    else
+      render json: product.errors, status: 422
+    end
   end
 
   # PATCH/PUT /products/1
   # PATCH/PUT /products/1.json
   def update
-      if @product.update(product_params)
-        render json: @product, status: 200
-      else
-        render json: @product.errors, status: :unprocessable_entit
-      end
+    if @product.update(product_params)
+      render json: @product, status: 200
+    else
+      render json: @product.errors, status: :unprocessable_entit
+    end
   end
 
   # DELETE /products/1
@@ -68,4 +71,5 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :description, :status, :id_user)
     end
+  end
 end

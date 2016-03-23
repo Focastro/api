@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160316062305) do
+ActiveRecord::Schema.define(version: 20160322205948) do
 
   create_table "products", force: :cascade do |t|
     t.string   "name",        limit: 255
@@ -19,12 +19,13 @@ ActiveRecord::Schema.define(version: 20160316062305) do
     t.string   "status",      limit: 255
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
+    t.integer  "id_user",     limit: 4
   end
 
   create_table "sessions", force: :cascade do |t|
     t.string   "username",      limit: 255
     t.string   "token",         limit: 255
-    t.date     "creation_date"
+    t.datetime "creation_date"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
   end
