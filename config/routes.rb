@@ -6,8 +6,8 @@ Rails.application.routes.draw do
    resources :sessions
    resources :transactions
    resources :products
-   #get '/products/?' => 'products#show_name'
    post '/session/authenticate' => 'sessions#create'
+   get '/session/logout' => 'sessions#index'
  end
 
 

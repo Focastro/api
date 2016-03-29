@@ -5,7 +5,8 @@ module Api
   # GET /sessions
   # GET /sessions.json
   def index
-    @sessions = Session.all
+    Session.destroy_all(token: token)
+    render json: "Logout", status: 200
   end
 
   # GET /sessions/1
@@ -30,10 +31,10 @@ module Api
 
       if Session.find_by(username: params[:username])
         session_verify = Session.find_by(username: params[:username])
-        Session.update(session_verify.id, :creation_date => Time.now)
-        render json: "sa", status: 200
+        session = Session.update(session_verify.id, :creation_date => 30.minutes.from_now.to_s)
+        render json: session, status: 200
       else
-        session = Session.new(:username => user.username, :creation_date => Time.new)
+        session = Session.new(:username => user.username, :creation_date => 30.minutes.from_now.to_s)
         session.save
         render json: session, status: 200
       end

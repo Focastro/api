@@ -1,10 +1,16 @@
-class TransactionsController < ApplicationController
-  before_action :set_transaction, only: [:show, :edit, :update, :destroy]
+module Api
+  class TransactionsController < ApplicationController
+    before_action :set_transaction, only: [:show, :edit, :update, :destroy]
 
   # GET /transactions
   # GET /transactions.json
   def index
-    @transactions = Transaction.all
+    transactions = Transaction.all
+    if transactions != []
+      render json: transactions, status: 200
+    else
+      render json: "Empty transactions", status: 422
+    end
   end
 
   # GET /transactions/1
@@ -24,17 +30,17 @@ class TransactionsController < ApplicationController
   # POST /transactions
   # POST /transactions.json
   def create
-    @transaction = Transaction.new(transaction_params)
+    transaction = Transaction.new(transaction_params)
 
-    respond_to do |format|
-      if @transaction.save
-        format.html { redirect_to @transaction, notice: 'Transaction was successfully created.' }
-        format.json { render :show, status: :created, location: @transaction }
-      else
-        format.html { render :new }
-        format.json { render json: @transaction.errors, status: :unprocessable_entity }
-      end
+    if product_offered = Product.find_by(id: params[:product_offered_id]) && product_req = Product.find_by(id: params[:product_req_id])
+      Product.update(product_offered.id, :id_user => product_req.id_user)
+      Product.update(product_req.id, :id_user => product_offered.id_user)
+      transaction.save
+      render json: "Transaction ready", status: 200
+    else
+      render json: "Incorrect data", status: 422
     end
+
   end
 
   # PATCH/PUT /transactions/1
@@ -55,10 +61,6 @@ class TransactionsController < ApplicationController
   # DELETE /transactions/1.json
   def destroy
     @transaction.destroy
-    respond_to do |format|
-      format.html { redirect_to transactions_url, notice: 'Transaction was successfully destroyed.' }
-      format.json { head :no_content }
-    end
   end
 
   private
@@ -69,6 +71,7 @@ class TransactionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def transaction_params
-      params.require(:transaction).permit(:product_req_id, :product_offered)
+      params.require(:transaction).permit(:product_req_id, :product_offered_id)
     end
+  end
 end
