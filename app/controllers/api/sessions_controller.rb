@@ -5,8 +5,8 @@ module Api
   # GET /sessions
   # GET /sessions.json
   def index
-    Session.destroy_all(token: token)
-    render json: "Logout", status: 200
+    # Session.destroy_all(token: token)
+    # render json: "Logout", status: 200
   end
 
   # GET /sessions/1
@@ -62,6 +62,7 @@ module Api
       if @session.update(session_params)
         format.html { redirect_to @session, notice: 'Session was successfully updated.' }
         format.json { render :show, status: :ok, location: @session }
+
       else
         format.html { render :edit }
         format.json { render json: @session.errors, status: :unprocessable_entity }
@@ -71,11 +72,9 @@ module Api
   # DELETE /sessions/1
   # DELETE /sessions/1.json
   def destroy
-    @session.destroy
-    respond_to do |format|
-      format.html { redirect_to sessions_url, notice: 'Session was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+
+    @session_current.destroy
+      head :no_content
   end
 
   private

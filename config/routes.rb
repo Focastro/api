@@ -7,7 +7,9 @@ Rails.application.routes.draw do
    resources :transactions
    resources :products
    post '/session/authenticate' => 'sessions#create'
-   get '/session/logout' => 'sessions#index'
+   delete '/session/logout' => 'sessions#destroy'
+   # delete '/session/logout' => 'sessions#index'
+ # match '/sessions/logout', to: 'sessions#destroy',     via: 'delete'
  end
 
 

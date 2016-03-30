@@ -8,7 +8,8 @@ class ApplicationController < ActionController::Base
   def validate_session
     authenticate_or_request_with_http_token do |token, options|
       @session_current = Session.find_by(token: token)
-      if session_current.creation_date.to_s >= Time.now.to_s
+      # falta el if para cuando venga vacio
+      if @session_current.creation_date.to_s > Time.now.to_s
         @session_current.update(creation_date: 30.minutes.from_now.to_s)
       else
         @session_current.destroy
