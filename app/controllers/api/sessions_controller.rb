@@ -1,17 +1,20 @@
 module Api
   class SessionsController < ApplicationController
-    before_action :set_session, only: [:show, :edit, :update, :destroy]
+    before_action :set_session, only: [:edit, :update, :destroy]
 
   # GET /sessions
   # GET /sessions.json
   def index
-    # Session.destroy_all(token: token)
-    # render json: "Logout", status: 200
   end
 
   # GET /sessions/1
   # GET /sessions/1.json
   def show
+    if @session_current.destroy
+      render json: "Logout", status: 200
+    else
+      render json: "Logout Error", status: 422
+    end
   end
 
   # GET /sessions/new
@@ -42,19 +45,6 @@ module Api
       render json: "User or password invalid", status: 422
     end
   end
-  # def create
-  #   users = Users.all
-  #   if users.exists?(username:, password:)
-
-  #   end
-  #   @session = Session.new(session_params)
-  #     if @session.save
-
-  #     else
-
-  #     end
-
-  # end
 
   # PATCH/PUT /sessions/1
   # PATCH/PUT /sessions/1.json
@@ -72,9 +62,8 @@ module Api
   # DELETE /sessions/1
   # DELETE /sessions/1.json
   def destroy
-
-    @session_current.destroy
-      head :no_content
+    @session.destroy
+    render json: "Logout", status: 200
   end
 
   private

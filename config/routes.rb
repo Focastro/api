@@ -6,10 +6,7 @@ Rails.application.routes.draw do
    resources :sessions
    resources :transactions
    resources :products
-   post '/session/authenticate' => 'sessions#create'
-   delete '/session/logout' => 'sessions#destroy'
-   # delete '/session/logout' => 'sessions#index'
- # match '/sessions/logout', to: 'sessions#destroy',     via: 'delete'
+   post '/sessions/authenticate' => 'sessions#create'
  end
 
 
