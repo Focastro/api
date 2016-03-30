@@ -1,64 +1,82 @@
 module Api
   class ProductsController < ApplicationController
     before_action :set_product, only: [:show, :edit, :update, :destroy]
+    before_action :validate_session, only: [:create]
 
   # GET /products
-  # GET /products.json
   def index
-    if product = Product.find_by(name: params[:name])
+    if Session.find_by(token: @session_current.token)
+      if product = Product.find_by(name: params[:name])
         render json: product, status: 200
-        #render json: {"Response": "Product not found"}, status: 422
+      else
+        product = Product.all
+        render json: product, status: 200
+      end
     else
-      product = Product.all
-      render json: product, status: 200
+      render json: "Expired Session", status: 200
     end
   end
 
   # GET /products/1
-  # GET /products/1.json
   def show
-    if product = Product.find_by(id: params[:id])
+    if Session.find_by(token: @session_current.token)
+      if product = Product.find_by(id: params[:id])
       render json: product, status: 200
+      else
+        render json: {"Response": "Product not found"}, status: 422
+      end
     else
-      render json: {"Response": "Product not found"}, status: 422
+      render json: "Expired Session", status: 200
     end
   end
 
-  # GET /products/new
-  def new
-    @product = Product.new
-  end
-
-  # GET /products/1/edit
-  def edit
-  end
-
   # POST /products
-  # POST /products.json
   def create
-    product = Product.new(product_params)
-    if product.save
-      render json: product, status: 201
+    if Session.find_by(token: @session_current.token)
+      product = Product.new(product_params)
+      if product.save
+        render json: product, status: 201
+      else
+        render json: product.errors, status: 422
+      end
     else
-      render json: product.errors, status: 422
+      render json: "Expired Session", status: 200
     end
   end
 
   # PATCH/PUT /products/1
-  # PATCH/PUT /products/1.json
   def update
-    if @product.update(product_params)
+    if Session.find_by(token: @session_current.token)
+      if @product.update(product_params)
       render json: @product, status: 200
+      else
+        render json: @product.errors, status: :unprocessable_entit
+      end
     else
-      render json: @product.errors, status: :unprocessable_entit
+      render json: "Expired Session", status: 200
     end
   end
 
   # DELETE /products/1
-  # DELETE /products/1.json
   def destroy
-    @product.destroy
-    render json: @product , status: 200
+    if Session.find_by(token: @session_current.token)
+      @product.destroy
+      render json: @product , status: 200
+    else
+      render json: "Expired Session", status: 200
+    end
+  end
+
+  protected
+  def validate_session
+    authenticate_or_request_with_http_token do |token, options|
+      @session_current = Session.find_by(token: token)
+      if @session_current.creation_date > Time.now
+        @session_current.update(creation_date: 30.minutes.from_now.to_s)
+      else
+        @session_current.destroy
+      end
+    end
   end
 
   private

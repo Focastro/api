@@ -1,66 +1,49 @@
 module Api
   class TransactionsController < ApplicationController
     before_action :set_transaction, only: [:show, :edit, :update, :destroy]
+    before_action :validate_session, only: [:create]
 
   # GET /transactions
-  # GET /transactions.json
   def index
-    transactions = Transaction.all
-    if transactions != []
-      render json: transactions, status: 200
+    if Session.find_by(token: @session_current.token)
+      transactions = Transaction.all
+      if transactions != []
+        render json: transactions, status: 200
+      else
+        render json: "Empty transactions", status: 422
+      end
     else
-      render json: "Empty transactions", status: 422
+      render json: "Expired Session", status: 200
     end
-  end
-
-  # GET /transactions/1
-  # GET /transactions/1.json
-  def show
-  end
-
-  # GET /transactions/new
-  def new
-    @transaction = Transaction.new
-  end
-
-  # GET /transactions/1/edit
-  def edit
   end
 
   # POST /transactions
-  # POST /transactions.json
   def create
-    transaction = Transaction.new(transaction_params)
-
-    if product_offered = Product.find_by(id: params[:product_offered_id]) && product_req = Product.find_by(id: params[:product_req_id])
-      Product.update(product_offered.id, :id_user => product_req.id_user)
-      Product.update(product_req.id, :id_user => product_offered.id_user)
-      transaction.save
-      render json: "Transaction ready", status: 200
+    if Session.find_by(token: @session_current.token)
+      transaction = Transaction.new(transaction_params)
+      if product_offered = Product.find_by(id: params[:product_offered_id]) && product_req = Product.find_by(id: params[:product_req_id])
+        Product.update(product_offered.id, :id_user => product_req.id_user)
+        Product.update(product_req.id, :id_user => product_offered.id_user)
+        transaction.save
+        render json: "Transaction ready", status: 200
+      else
+        render json: "Incorrect data", status: 422
+      end
     else
-      render json: "Incorrect data", status: 422
+      render json: "Expired Session", status: 200
     end
-
   end
 
-  # PATCH/PUT /transactions/1
-  # PATCH/PUT /transactions/1.json
-  def update
-    respond_to do |format|
-      if @transaction.update(transaction_params)
-        format.html { redirect_to @transaction, notice: 'Transaction was successfully updated.' }
-        format.json { render :show, status: :ok, location: @transaction }
+  protected
+  def validate_session
+    authenticate_or_request_with_http_token do |token, options|
+      @session_current = Session.find_by(token: token)
+      if @session_current.creation_date > Time.now
+        @session_current.update(creation_date: 30.minutes.from_now.to_s)
       else
-        format.html { render :edit }
-        format.json { render json: @transaction.errors, status: :unprocessable_entity }
+        @session_current.destroy
       end
     end
-  end
-
-  # DELETE /transactions/1
-  # DELETE /transactions/1.json
-  def destroy
-    @transaction.destroy
   end
 
   private

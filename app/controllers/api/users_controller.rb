@@ -1,30 +1,9 @@
 module Api
   class UsersController < ApplicationController
-    before_action :set_user, only: [:show, :edit, :update, :destroy]
+    before_action :set_user, only: [:update, :destroy]
     before_action :user_params, only: [:create]
 
-  # GET /users
-  # GET /users.json
-  def index
-    @users = User.all
-  end
-
-  # GET /users/1
-  # GET /users/1.json`
-  def show
-  end
-
-  # GET /users/new
-  def new
-    @user = User.new
-  end
-
-  # GET /users/1/edit
-  def edit
-  end
-
   # POST /users
-  # POST /users.json
   def create
     user = User.new(user_params)
     if user.save
@@ -35,20 +14,26 @@ module Api
   end
 
   # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
   def update
-    if @user.update(user_params)
+    if Session.find_by(token: @session_current.token)
+      if @user.update(user_params)
       render json: @user, status: 200
+      else
+        render json: @user.errors, status: :unprocessable_entit
+      end
     else
-      render json: @user.errors, status: :unprocessable_entit
+      render json: "Expired Session", status: 200
     end
   end
 
   # DELETE /users/1
-  # DELETE /users/1.json
   def destroy
-    @user.destroy
+    if Session.find_by(token: @session_current.token)
+      @user.destroy
       render json: @user , status: 200
+    else
+      render json: "Expired Session", status: 200
+    end
   end
 
   private
