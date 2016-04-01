@@ -7,7 +7,7 @@ module Api
     if @session_current.destroy
       render json: "Logout", status: 200
     else
-      render json: "Logout Error", status: 422
+      render json: "Invalid token", status: 422
     end
   end
 

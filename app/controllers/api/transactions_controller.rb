@@ -1,7 +1,7 @@
 module Api
   class TransactionsController < ApplicationController
     before_action :set_transaction, only: [:show, :edit, :update, :destroy]
-    before_action :validate_session, only: [:create]
+    before_action :validate_session_create, only: [:create]
 
   # GET /transactions
   def index
@@ -21,11 +21,13 @@ module Api
   def create
     if Session.find_by(token: @session_current.token)
       transaction = Transaction.new(transaction_params)
-      if product_offered = Product.find_by(id: params[:product_offered_id]) && product_req = Product.find_by(id: params[:product_req_id])
+      product_offered = Product.find_by(id: params[:product_offered_id])
+      product_req = Product.find_by(id: params[:product_req_id])
+      if product_offered != [] && product_req != []
         Product.update(product_offered.id, :id_user => product_req.id_user)
         Product.update(product_req.id, :id_user => product_offered.id_user)
         transaction.save
-        render json: "Transaction ready", status: 200
+        render json: "Transaction complete", status: 201
       else
         render json: "Incorrect data", status: 422
       end
@@ -35,7 +37,7 @@ module Api
   end
 
   protected
-  def validate_session
+  def validate_session_create
     authenticate_or_request_with_http_token do |token, options|
       @session_current = Session.find_by(token: token)
       if @session_current.creation_date > Time.now

@@ -1,7 +1,7 @@
 module Api
   class ProductsController < ApplicationController
-    before_action :set_product, only: [:show, :edit, :update, :destroy]
-    before_action :validate_session, only: [:create]
+    before_action :set_product, only: [:edit, :update, :destroy]
+    before_action :validate_session_create, only: [:create]
 
   # GET /products
   def index
@@ -23,7 +23,7 @@ module Api
       if product = Product.find_by(id: params[:id])
       render json: product, status: 200
       else
-        render json: {"Response": "Product not found"}, status: 422
+        render json: "Product not found", status: 422
       end
     else
       render json: "Expired Session", status: 200
@@ -68,7 +68,7 @@ module Api
   end
 
   protected
-  def validate_session
+  def validate_session_create
     authenticate_or_request_with_http_token do |token, options|
       @session_current = Session.find_by(token: token)
       if @session_current.creation_date > Time.now
