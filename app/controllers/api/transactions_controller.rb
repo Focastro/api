@@ -21,18 +21,26 @@ module Api
   def create
     if Session.find_by(token: @session_current.token)
       transaction = Transaction.new(transaction_params)
-      product_offered = Product.find_by(id: params[:product_offered_id])
-      product_req = Product.find_by(id: params[:product_req_id])
-      if product_offered != [] && product_req != []
-        Product.update(product_offered.id, :id_user => product_req.id_user)
-        Product.update(product_req.id, :id_user => product_offered.id_user)
-        transaction.save
-        render json: "Transaction complete", status: 201
+      if transaction.save
+        render json: product, status: 201
       else
-        render json: "Incorrect data", status: 422
+        render json: product.errors, status: 422
       end
     else
       render json: "Expired Session", status: 200
+    end
+  end
+
+  # PATCH/PUT /products/1
+  def update
+    product_offered = Product.find_by(id: params[:product_offered_id])
+    product_req = Product.find_by(id: params[:product_req_id])
+    if product_offered != [] && product_req != []
+      Product.update(product_offered.id, :id_user => product_req.id_user)
+      Product.update(product_req.id, :id_user => product_offered.id_user)
+      render json: "Transaction complete", status: 201
+    else
+      render json: "Incorrect data", status: 422
     end
   end
 
@@ -56,7 +64,7 @@ module Api
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def transaction_params
-      params.require(:transaction).permit(:product_req_id, :product_offered_id)
+      params.require(:transaction).permit(:product_req_id, :product_offered_id, :status)
     end
   end
 end
