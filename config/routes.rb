@@ -1,11 +1,13 @@
 Rails.application.routes.draw do
-    namespace :api, path: '/', defaults: {format: 'json'} do
-     resources :users
-     resources :sessions
-     resources :transactions
-     resources :products
-     post '/sessions/authenticate' => 'sessions#create'
- end
+  namespace :api, path: '/', defaults: {format: 'json'} do
+   resources :users
+   resources :sessions
+   resources :transactions
+   resources :products
+
+   match '/sessions',  to: 'sessions#authenticate',      via: 'post'
+   #post '/sessions/authenticate' => 'sessions#create'
+   end
 
 
 
