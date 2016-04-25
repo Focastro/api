@@ -3,6 +3,18 @@ module Api
     before_action :set_product, only: [:edit, :update, :destroy]
     before_action :validate_session_create, only: [:create]
 
+  def productsUser
+    #if Session.find_by(token: @session_current.token)
+      if product = Product.where(id_user: params[:id]).all
+        render json: product, status: 200
+      else
+        render json: "Product not found", status: 422
+      end
+    #else
+      #render json: "Expired Session", status: 200
+    #end
+  end
+
   # GET /products
   def index
     #if Session.find_by(token: @session_current.token)
@@ -87,7 +99,7 @@ module Api
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
-      params.require(:product).permit(:name, :description, :status, :id_user)
+      params.require(:product).permit(:name, :description, :status, :id_user, :image)
     end
   end
 end
