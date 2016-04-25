@@ -17,7 +17,7 @@ module Api
     if user && user.authenticate(params[:password])
       session = Session.new(:username => user.username, :creation_date => 30.minutes.from_now.to_s)
       session.save
-      render json: session, status: 200
+      render json: session.as_json.merge(:id_user => user.id), status: 200
     else
       render json: "User or password invalid", status: 422
     end
