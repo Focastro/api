@@ -3,29 +3,37 @@ module Api
     before_action :set_transaction, only: [:show, :edit, :update, :destroy]
     before_action :validate_session_create, only: [:create]
 
-  def transactionUserReq
-    if Session.find_by(token: @session_current.token)
-      if transactionReq = Transaction.where(user_prod_req: params[:id]).all
-        render json: transactionReq, status: 201
-      else
-        render json: transactionReq.errors, status: 422
-      end
-    else
-      render json: "Expired Session", status: 200
-    end
-  end
+    def transactionUserReq
+      if Session.find_by(token: @session_current.token)
+        if transactionReq = Transaction.where(user_prod_req: params[:id]).all #arreglo de transacciones por user requerido
+          asd = Product.find_by(id: transactionReq[0].product_req_id)
+          #puts(asd.inspect)
+          #af = "teta"
+          #puts (transactionReq[0]).inspect #agregar al 1 #imprime la 1 transaccion
 
-  def transactionUserOffe
-    if Session.find_by(token: @session_current.token)
-      if transactionOffe = Transaction.where(user_prod_offe: params[:id]).all
-        render json: transactionOffe, status: 201
+          transactionReq[0].as_json.merge(:nuevo => 'sirva mierda') #agregar al 1
+          puts (transactionReq[0]).inspect
+
+          render json: transactionReq, status: 201 
+        else
+          render json: transactionReq.errors, status: 422
+        end
       else
-        render json: transactionOffe.errors, status: 422
+        render json: "Expired Session", status: 200
       end
-    else
-      render json: "Expired Session", status: 200
     end
-  end
+
+    def transactionUserOffe
+      if Session.find_by(token: @session_current.token)
+        if transactionOffe = Transaction.where(user_prod_offe: params[:id]).all
+          render json: transactionOffe, status: 201
+        else
+          render json: transactionOffe.errors, status: 422
+        end
+      else
+        render json: "Expired Session", status: 200
+      end
+    end
   # GET /transactions
   # def index
   #   if Session.find_by(token: @session_current.token)
