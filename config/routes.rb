@@ -6,7 +6,7 @@ Rails.application.routes.draw do
    resources :products
 
    match '/products/user/:id',  to: 'products#productsUser',  via: 'GET'
-   #post '/sessions/authenticate' => 'sessions#create'
+   match '/products/:id', to: 'products#productsHome',  via: 'GET'
    end
 
 
