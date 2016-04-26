@@ -21,10 +21,14 @@ module Api
   def create
     if Session.find_by(token: @session_current.token)
       transaction = Transaction.new(transaction_params)
+      product_req = Product.find_by(id: transaction.product_req_id)
+      product_offered = Product.find_by(id: transaction.product_offered_id)
+      transaction.user_prod_req = product_req.id_user
+      transaction.user_prod_offe = product_offered.id_user
       if transaction.save
-        render json: product, status: 201
+        render json: transaction, status: 201
       else
-        render json: product.errors, status: 422
+        render json: transaction.errors, status: 422
       end
     else
       render json: "Expired Session", status: 200
@@ -64,7 +68,7 @@ module Api
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def transaction_params
-      params.require(:transaction).permit(:product_req_id, :product_offered_id, :status)
+      params.require(:transaction).permit(:product_req_id, :product_offered_id, :status, :user_prod_req, :user_prod_offe)
     end
   end
 end
