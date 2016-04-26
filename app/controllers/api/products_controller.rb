@@ -4,29 +4,29 @@ module Api
     before_action :validate_session_create, only: [:create]
 
   def productsUser
-    #if Session.find_by(token: @session_current.token)
+    if Session.find_by(token: @session_current.token)
       if product = Product.where(id_user: params[:id]).all
         render json: product, status: 200
       else
         render json: "Product not found", status: 422
       end
-    #else
-      #render json: "Expired Session", status: 200
-    #end
+    else
+      render json: "Expired Session", status: 200
+    end
   end
 
   # GET /products
   def index
-    #if Session.find_by(token: @session_current.token)
+    if Session.find_by(token: @session_current.token)
       if product = Product.find_by(name: params[:name])
         render json: product, status: 200
       else
         product = Product.all
         render json: product, status: 200
       end
-    #else
-      #render json: "Expired Session", status: 200
-    #end
+    else
+      render json: "Expired Session", status: 200
+    end
   end
 
   # GET /products/1
