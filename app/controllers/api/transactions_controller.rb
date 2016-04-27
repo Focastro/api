@@ -6,15 +6,13 @@ module Api
     def transactionUserReq
       if Session.find_by(token: @session_current.token)
         if transactionReq = Transaction.where(user_prod_req: params[:id]).all #arreglo de transacciones por user requerido
-          asd = Product.find_by(id: transactionReq[0].product_req_id)
-          #puts(asd.inspect)
-          #af = "teta"
-          #puts (transactionReq[0]).inspect #agregar al 1 #imprime la 1 transaccion
 
-          transactionReq[0].as_json.merge(:nuevo => 'sirva mierda') #agregar al 1
-          puts (transactionReq[0]).inspect
-
-          render json: transactionReq, status: 201 
+          ary = Array.new
+          for index in 0 ... transactionReq.size
+            ary.push(transactionReq[index].as_json.merge({proReq: Product.find_by(id: transactionReq[index].product_req_id), proOff: Product.find_by(id: transactionReq[index].product_offered_id)}))
+          end
+          #render json: { transaction: transactionReq, object: ary }, :status => 201
+          render json: ary, status: 201 
         else
           render json: transactionReq.errors, status: 422
         end
