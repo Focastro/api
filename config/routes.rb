@@ -7,9 +7,10 @@ Rails.application.routes.draw do
 
    match '/products/user/:id',  to: 'products#productsUser',  via: 'GET'
    match '/products/home/:id', to: 'products#productsHome',  via: 'GET'
-
+   match '/sessions/logout', to: 'sessions#logOut',  via: 'GET'
    match '/transactions/userreq/:id', to: 'transactions#transactionUserReq',  via: 'GET'
    match '/transactions/useroffe/:id', to: 'transactions#transactionUserOffe',  via: 'GET'
+
    end
 
 

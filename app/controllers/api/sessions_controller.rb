@@ -2,9 +2,8 @@ module Api
   class SessionsController < ApplicationController
     before_action :set_session, only: [:edit, :update, :destroy]
 
-  # GET /sessions/1
-  def show
-    if @session_current.destroy
+  def logOut
+    if Session.destroy_all(token: token)
       render json: "Logout", status: 200
     else
       render json: "Invalid token", status: 422
